@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title></title>
+</head>
+
+<body>
+  <script>
+    /**
+     * 样例输入：versions = ['0.1.1', '2.3.3', '0.302.1', '4.2', '4.3.5', '4.3.4.5']
+     * 输出：['0.1.1', '0.302.1', '2.3.3', '4.3.4.5', '4.3.5']
+     */
+    // function test(s) {
+    //   return s.sort((a, b) => {
+    //     const tempA = a.split('.');
+    //     const tempB = b.split('.');
+    //     const maxLen = Math.max(tempA.length, tempB.length);
+    //     for (let i = 0; i < maxLen; i++ ) {
+    //         const valueA = +tempA[i] || 0;
+    //         const valueB = +tempB[i] || 0;
+    //         if (valueA  === valueB) {
+    //             continue;
+    //         }
+    //         return valueA - valueB;
+    //     }
+    //     return 0;
+    //   });
+    // };
+    // console.log(test(['1.1.1', '2.3.3', '0.302.1', '4.2', '4.3.5', '4.3.4.5', '4.0.0', '4.3.5.1', '4.3.4.1']));
+
+    /**
+     * Definition for singly-linked list.
+     * function ListNode(val, next) {
+     *     this.val = (val===undefined ? 0 : val)
+     *     this.next = (next===undefined ? null : next)
+     * }
+     *   1 -> 2 -> 3 -> 4 -> 5
+     *   h         c
+     *             h         c
+     */  
+    // /**
+    // * @param {ListNode} head
+    // * @return {ListNode}
+    // */
+    // var reverseKGroup = function(head, k) {
+    //   let cur = head;
+    //   let count = 0;
+    //   while (cur && count != k) { 
+    //     cur = cur.next;
+    //     count++;
+    //   }
+    //   if (count == k) { 
+    //     // If there are, reverse them
+    //     cur = reverseKGroup(cur, k); 
+    //     while (cur) {
+    //         let next = head.next;
+    //         head.next = cur;
+    //         cur = head;
+    //         head = next; 
+    //         count--;
+    //     }
+    //     head = cur;
+    //   }
+    //   return head;
+    // };
+    // /**
+    //  * {}[]()
+    //  * @param {string} s
+    //  * @return {boolean}
+    //  */
+    // var isValid = function(s) {
+    //   if (!s.length) return true
+    //   if (s.length % 2 !== 0) return false
+    //   const l = ['(', '{', '['];
+    //   const obj = {'(': ')', '{': '}', '[': ']'};
+    //   const res = [];
+    //   for (let i = 0; i < s.length; i++) {
+    //       if (l.includes(s[i])) {
+    //           res.push(s[i]);
+    //       } else if (s[i] === obj[res[res.length - 1]]) {
+    //           res.pop();
+    //       } else {
+    //         return false;
+    //       }
+    //   }
+    //   return res.length === 0;
+    // };
+    // [73,74,75,71,69,72,76,73]
+    // [0, 1, 2, 3, 4, 5, 6, 7]
+    /**
+     * [1, 1, 4, 2, 1, 1, 0, 0]
+     * 
+     * [7 73]
+     * [6 76]
+     *  
+     */
+    // var dailyTemperatures = function(temperatures) {
+    //   const stack = [];
+    //   const list = new Array(temperatures.length).fill(0);
+    //   for (let i = 0; i < temperatures.length; i++) {
+    //       if (!stack.length) {
+    //           stack.push(i);
+    //           continue;
+    //       }
+    //       while(temperatures[i] > temperatures[stack[stack.length - 1]]) {
+    //         list[stack[stack.length - 1]] = i - stack[stack.length - 1];
+    //         stack.pop();
+    //       }
+    //       stack.push(i);
+    //   }
+    //   return list;
+    // };
+    // dailyTemperatures([73,74,75,71,69,72,76,73]);
+    // var maxSlidingWindow = function(nums, k) {
+    //     if (nums.length === 1) return nums;
+    //     const list = [];
+    //     const res = [];
+    //     debugger;
+    //     for (let i = 0; i < nums.length; i++) {
+    //         while(list.length && nums[list[list.length - 1]] <= nums[i]) {
+    //             list.pop();
+    //         }
+    //         list.push(i);
+    //         if (list[0] < i + 1 - k) {
+    //             list.shift();
+    //         }
+    //         if (i+1 >= k) {
+    //             res[i+1-k] = nums[list[0]];
+    //         }
+    //     }
+    //     return res;
+    // };
+    // console.log(maxSlidingWindow([1,3,-1,-3,2,3,6,7], 3));
+    /**
+     * 实现搜索二叉树 
+     */
+    // class TreeNode {
+    //   constructor(value) {
+    //     this.value = value;
+    //     this.left = null;
+    //     this.right = null;
+    //   }
+    // }
+    // class BinaryTree {
+    //   constructor() {
+    //     this.root = null;
+    //   }
+    //   // 插入节点
+    //   insert(value) {
+    //     const newNode = new TreeNode(value);
+    //     if (!this.root) {
+    //       this.root = newNode;
+    //     } else {
+    //       this.insertNode(this.root, newNode);
+    //     }
+    //   }
+    //   insertNode(tree, newNode) {
+    //     if (newNode.value < tree.value) {
+    //       if (tree.left === null) {
+    //         tree.left = newNode;
+    //       } else {
+    //         this.insertNode(tree.left, newNode);
+    //       }
+    //     } else {
+    //       if (tree.right === null) {
+    //         tree.right = newNode;
+    //       } else {
+    //         this.insertNode(tree.right, newNode);
+    //       }
+    //     }
+    //   }
+
+    //   // 先序遍历
+    //   preOrderTraversal(callback) {
+    //     this.preOrderTraversalNode(this.root, callback);
+    //   }
+
+    //   preOrderTraversalNode(node, callback) {
+    //     if (node) {
+    //       callback(node);
+    //       this.preOrderTraversalNode(node.left, callback);
+    //       this.preOrderTraversalNode(node.right, callback);
+    //     }
+    //   }
+
+    //   // 中序遍历
+    //   inOrderTraversal(callback) {
+    //     this.inOrderTraversalNode(this.root, callback);
+    //   }
+
+    //   inOrderTraversalNode(node, callback) {
+    //     if (node) {
+    //       this.inOrderTraversalNode(node.left, callback);
+    //       callback(node);
+    //       this.inOrderTraversalNode(node.right, callback);
+    //     }
+    //   }
+
+    //   // 后续遍历
+    //   postOrderTraversal(callback) {
+    //     this.postOrderTraversalNode(this.root, callback);
+    //   }
+
+    //   postOrderTraversalNode(node, callback) {
+    //     if (node) {
+    //       this.postOrderTraversalNode(node.left, callback);
+    //       this.postOrderTraversalNode(node.right, callback);
+    //       callback(node);
+    //     }
+    //   }
+    // }
+    // const tree = new BinaryTree();
+    // tree.insert(3);
+    // tree.insert(1);
+    // tree.insert(4);
+    // tree.insert(null);
+    // tree.insert(2);
+    // console.log(tree);
+    /**
+     * 二叉搜索树前K小的数 
+     */ 
+    // var kthSmallest = function(root, k) {
+    //     const obj = {count: 0, val: root.val};
+    //     debugger;
+    //     inOrderTraversalNode(root, k, obj);
+    //     return obj.val;
+    // };
+
+    // var inOrderTraversalNode = function(node, k, obj) {
+    //     if (node && node.value) {
+    //         inOrderTraversalNode(node.left, k, obj);
+    //         obj.count++;
+    //         if (obj.count === k) {
+    //             obj.count++;
+    //             obj.val = node.value;
+    //             return;
+    //         }
+    //         inOrderTraversalNode(node.right, k, obj.count);
+    //     }
+    // }
+
+    // console.log(kthSmallest(tree.root, 1));
+
+    /**
+     *   250 题，在一棵二叉树里，统计有多少棵子树，要求子树里面的元素拥有相同的数字。
+     *   输入：root = [5,1,5,5,5,null,5]
+     *   输出：4
+     *              5
+     *             / \
+     *            1   5
+     *           / \   \
+     *          5   5   5         
+     */
+    // function TreeNode(val, left, right) {
+    //     this.val = (val===undefined ? 0 : val)
+    //     this.left = (left===undefined ? null : left)
+    //     this.right = (right===undefined ? null : right)
+    // }
+
+    // let arr = [5,1,5,5,5,null,5];
+
+    // let nodes = arr.map(val => val !== null ? new TreeNode(val) : null);
+
+    // for(let i = 0; i < nodes.length; i++) {
+    //     let node = nodes[i];
+    //     if(node !== null) {
+    //         let leftIdx = 2 * i + 1;
+    //         let rightIdx = 2 * i + 2;
+    //         if(leftIdx < nodes.length) {
+    //             node.left = nodes[leftIdx];
+    //         }
+    //         if(rightIdx < nodes.length) {
+    //             node.right = nodes[rightIdx];
+    //         }
+    //     }
+    // }
+
+    // let root = nodes[0];
+    // console.log(root);
+
+    // let count = 0;
+
+    // var countUnivalSubtrees = function (node) {
+    //   if (!node) return 0;
+    //   is_uni(node);
+    //   return count;
+    // }
+
+    // var is_uni = function (node) {
+    //   if (!node.left && !node.right) {
+    //     count++;
+    //     return true;
+    //   }
+    //   let flag = true;
+    //   if (node.left) {
+    //     flag = is_uni(node.left) && node.val === node.left.val;
+    //   }
+    //   if (node.right) {
+    //     flag = is_uni(node.right) && flag && node.val === node.right.val;
+    //   }
+    //   if (!flag) return false;
+    //   count++;
+    //   return true;
+    // }
+
+    // console.log(countUnivalSubtrees(root));
+
+    /**
+     * 347. 前 K 个高频元素
+     * nums = [1,1,1,2,2,3], k = 2
+     * 输出: [1,2]
+     */ 
+    // var topKFrequent = function(nums, k) {
+    //   if (nums.length === k) return nums;
+    //   const m = new Map();
+    //   const res = [];
+    //   const heap = [];
+    //   for (let i = 0; i < nums.length; i++) {
+    //     if (m.has(nums[i])) {
+    //       m.set(nums[i], m.get(nums[i]) + 1);
+    //     } else {
+    //       m.set(nums[i], 1);
+    //     }
+    //   }
+    //   for (let [num, freq] of m.entries()) {
+    //     if (heap.length < k) {
+    //       heap.push([freq, num]);
+    //       heap.sort((a, b) => a[0] - b[0]);
+    //     } else if (freq > heap[0][0]) {
+    //       heap.shift();
+    //       heap.push([freq, num]);
+    //       heap.sort((a, b) => a[0] - b[0]);
+    //     }
+    //   }
+    //   while(heap.length) {
+    //     res.push(heap.pop()[1]);
+    //   }
+    //   console.log(heap, m, res);
+    // };
+
+    // topKFrequent([5,3,1,1,1,3,5,73,1], 3);
+
+    // 冒泡排 O(n^2)
+    // var sortArray = function(nums) {
+    //     let flag = true;
+    //     for (let i = 0; i < nums.length - 1 && flag; i++) {
+    //       flag = false;
+    //       for (let j = 0; j < nums.length - i - 1; j++) {
+    //         if (nums[j] > nums[j + 1]) {
+    //             [nums[j], nums[j + 1]] = [nums[j + 1], nums[j]];
+    //             flag = true;
+    //         }
+    //       }
+    //     }
+    //     return nums;
+    // };
+    // 插入排 O(n^2)
+    // var sortArray = function(nums) {
+    //     for (let i = 1; i < nums.length; i++) {
+    //       let current = nums[i];
+    //       let j;
+    //       for (j = i - 1; j >= 0 && nums[j] > current; j--) {
+    //         nums[j + 1] = nums[j];
+    //       }
+    //       nums[j + 1] = current;
+    //     }
+    //     return nums;
+    // };
+    // 归并排
+    // var sortArray = function(nums) {
+    //   return sort(nums);
+    // }
+
+    // var sort = function(nums) {
+    //   if (nums.length <= 1) return nums;
+    //   const mid = Math.floor(nums.length / 2);
+    //   const left = sort(nums.slice(0, mid));
+    //   const right = sort(nums.slice(mid));
+    //   return merge(left, right);
+    // }
+
+    // var merge = function(left, right) {
+    //   const result = [];
+    //   let i = 0,
+    //       j = 0;
+    //   while(i < left.length && j < right.length) {
+    //     if (left[i] < right[j]) {
+    //       result.push(left[i]);
+    //       i++;
+    //     } else {
+    //       result.push(right[j]);
+    //       j++
+    //     }
+    //   }
+    //   return result.concat(left.slice(i).concat(right.slice(j)));
+    // }
+    // 快速排
+    // var sortArray = function(nums) {
+    //   if (nums.length <= 1) return nums;
+    //   sort(nums, 0, nums.length - 1);
+    // }
+
+    // var sort = function(nums, l, r) {
+    //   if (l < r) {
+    //     const randomI = partition(nums, l, r);
+    //     // 基准值左边的
+    //     sort(nums, l, randomI - 1);
+    //     // 基准值右边的
+    //     sort(nums, randomI + 1, r);
+    //   }
+    // }
+
+    // var partition = function(nums, l, r) {
+    //   // 随机找一个基准值与最右的交换位置 最右的就是基准值
+    //   const randomIndex = l + Math.floor(Math.random() * (r - l + 1));
+    //   swap(nums, randomIndex, r);
+    //   let i = l - 1;
+    //   for (let j = l; j < r; j++) {
+    //     // 找到比基准值小的
+    //     if (nums[j] <= nums[r]) {
+    //       // 将比基准值小的放到i的前面
+    //       i++;
+    //       swap(nums, i, j);
+    //     }
+    //   }
+    //   swap(nums, i + 1, r);
+    //   return i + 1;
+    // }
+
+    // var swap = function(nums, l, r) {
+    //   [nums[l], nums[r]] = [nums[r], nums[l]];
+    // }
+
+    // const data = [5,3,1,1,1,3,5,73,1];
+    // sortArray(data);
+
+    // console.log(data);
+
+    // 215. 数组中的第K个最大元素
+    /**
+     * 输入: [3,2,1,5,6,4], k = 2
+     * 输出: 5
+     * 
+     * 输入: [3,2,3,1,2,4,5,5,6], k = 4
+     * 输出: 4
+     */
+    // 快速选择法
+    // var findKthLargest = function(nums, k) {
+    //     if (nums.length <= 1 && k === 1) return nums[0];
+    //     return sort(nums, 0, nums.length - 1, k - 1);
+    // };
+
+    // var sort = function(nums, l, r, k) {
+    //     if (l >= r) {
+    //       return nums[l];
+    //     }
+    //     const mid = partition(nums, l, r);
+    //     if (k === mid) {
+    //         return nums[mid];
+    //     } else if (k < mid) {
+    //         return sort(nums, l, mid - 1, k);
+    //     } else if (k > mid) {
+    //         return sort(nums, mid + 1, r, k);
+    //     }
+    // }
+
+    // var partition = function(nums, l, r) {
+    //     const p = l + Math.floor(Math.random() * (r - l + 1));
+    //     swap(nums, p, r);
+    //     let i = l - 1;
+    //     for (let j = l; j < r; j++) {
+    //         if (nums[j] >= nums[r]) {
+    //             i++;
+    //             swap(nums, i, j);
+    //         }
+    //     }
+    //     swap(nums, i + 1, r);
+    //     return i + 1;
+    // }
+
+    // var swap = function(nums, l, r) {
+    //     [nums[l], nums[r]] = [nums[r], nums[l]];
+    // }
+
+    // const data = [3, 2, 1, 5, 4];
+    // console.log(findKthLargest(data, 2));
+    // 小顶堆（优先队列）
+    // class PriorityQueue {
+    //   constructor() {
+    //       this.heap = [];
+    //   }
+    //   // 入
+    //   enqueue(node) {
+    //     this.heap.push(node);
+    //     this.bubbleUp();
+    //   }
+    //   // 出
+    //   dequeue() {
+    //     // 获取最小值（堆顶）
+    //     const node = this.heap[0];
+    //     // 弹出最大值
+    //     const end = this.heap.pop();
+    //     // 如果堆不为空
+    //     if (this.heap.length > 0) {
+    //       // 将弹出的堆底放在堆顶进行下沉操作
+    //       this.heap[0] = end;
+    //       this.sinkDown();
+    //     }
+    //     // 返回最小值
+    //     return node;
+    //   }
+    //   // 上浮
+    //   bubbleUp() {
+    //     // 找到堆底的元素（也就是新加入的元素）
+    //     let index = this.heap.length - 1;
+    //     const node = this.heap[index];
+    //     // 循环：从堆底开始比对父节点 换位置 替换index值
+    //     while(index > 0) {
+    //       // 找到当前元素的父节点
+    //       const parentIndex = Math.floor((index - 1) / 2);
+    //       // 判断新加入的元素（node）是否大于其父元素
+    //       if (node >= this.heap[parentIndex]) {
+    //         break;
+    //       }
+    //       // 互换node与其父节点
+    //       this.heap[index] = this.heap[parentIndex];
+    //       this.heap[parentIndex] = node;
+    //       // 将index替换为其父节点位置 实现上浮
+    //       index = parentIndex;
+    //     }
+    //   }
+    //   // 下沉
+    //   sinkDown() {
+    //     // 找到堆顶元素（也就是出堆后的堆底元素）
+    //     const node = this.heap[0];
+    //     let i = 0;
+    //     // 获取堆大小
+    //     const length = this.heap.length;
+    //     while(true) {
+    //       // 获取左右子节点
+    //       let leftIndex = i * 2 + 1;
+    //       let rightIndex = i * 2 + 2;
+    //       // 记录是否需要与子节点换位的下标
+    //       let flag = null;
+    //       // 左子结点不是结尾
+    //       if (leftIndex < length) {
+    //         // 要排序的元素对比其左子结点
+    //         if (node > this.heap[leftIndex]) {
+    //           flag = leftIndex;
+    //         }
+    //       }
+    //       // 右子节点不是结尾
+    //       if (rightIndex < length) {
+    //         // 当前元素小于左子节点 且 当前元素大于右子节点 或者 当前元素大于左子结点 且 左子结点大于右子节点
+    //         if ((!flag && node > this.heap[rightIndex]) || flag && this.heap[rightIndex] < this.heap[leftIndex]) {
+    //           flag = rightIndex;
+    //         }
+    //       }
+
+    //       // 当前元素既小于左子节点又小于右子节点
+    //       if (!flag) break;
+
+    //       // 上面对比后 flag就是本次找到的最小的与元素了 与当前元素进行换位
+    //       this.heap[i] = this.heap[flag];
+    //       this.heap[flag] = node;
+    //       i = flag;
+    //     }
+    //   }
+    //   size() {
+    //     return this.heap.length;
+    //   }
+    // }
+
+    // var findKthLargest = function(nums, k) {
+    //   const pq = new PriorityQueue();
+    //   for (let i = 0; i < nums.length; i++) {
+    //     pq.enqueue(nums[i]);
+    //     if (pq.size() > k) {
+    //       pq.dequeue();
+    //     }
+    //   }
+    //   return pq.dequeue();
+    // }
+
+    // console.log(findKthLargest([3,2,3,1,2,4,5,5,6], 4));
+
+    /**
+     * 147. 对链表进行插入排序
+     * 输入head = [4 -> 2 -> 1 -> 3]
+     * 输出: [1 -> 2 -> 3 -> 4]  
+     * 
+     * 输入: head = [-1,5,3,4,0]
+     * 输出: [-1,0,3,4,5] 
+     */
+    // var ListNode = function(val) {
+    //   this.val = val;
+    //   this.next = null;
+    // }
+    // var insertionSortList = function(head) {
+    //   let newHead = new ListNode(0);
+    //   let cur = head;
+    //   while (cur) {
+    //     let pre = newHead;
+    //     while (pre.next && pre.next.val < cur.val) {
+    //       pre = pre.next;
+    //     }
+    //     let next = cur.next;
+    //     cur.next = pre.next;
+    //     pre.next = cur;
+    //     cur = next;
+    //   }
+    //   return newHead.next;
+    // };
+
+    // 删除有序数组中的重复项 II
+    // 示例 1：
+
+    // 输入：nums = [1,1,1,2,2,3]
+    // 输出：5, nums = [1,1,2,2,3]
+    // 解释：函数应返回新长度 length = 5, 并且原数组的前五个元素被修改为 1, 1, 2, 2, 3。 不需要考虑数组中超出新长度后面的元素。
+    // 示例 2：
+
+    // 输入：nums = [0,0,1,1,1,1,2,3,3]
+    // 输出：7, nums = [0,0,1,1,2,3,3]
+    // 解释：函数应返回新长度 length = 7, 并且原数组的前七个元素被修改为 0, 0, 1, 1, 2, 3, 3。不需要考虑数组中超出新长度后面的元素。
+
+    /**
+     * @param {number[]} nums
+     * @return {number}
+     */
+    // var removeDuplicates = function(nums) {
+    //     let slow = 0;
+    //     let fast = 0;
+    //     let count = 0;
+    //     while (fast < nums.length) {
+    //         if (nums[fast] !== nums[slow]) {
+    //             slow++;
+    //             nums[slow] = nums[fast];
+    //         } else if (slow < fast && count < 2) {
+    //             slow++;
+    //             nums[slow] = nums[fast];
+    //         }
+    //         count++;
+    //         fast++;
+
+    //         if (fast < nums.length && nums[fast] !== nums[slow]) {
+    //           count = 0;
+    //         }
+    //     }
+
+    //     return slow + 1;
+    // };
+    // console.log(removeDuplicates([1,1,1,2,2,3]));
+
+    // 多数元素
+    // 给定一个大小为 n 的数组 nums ，返回其中的多数元素。多数元素是指在数组中出现次数 大于 ⌊ n/2 ⌋ 的元素。
+    // 你可以假设数组是非空的，并且给定的数组总是存在多数元素。
+   
+    // 示例 1：
+
+    // 输入：nums = [3,2,3]
+    // 输出：3
+    // 示例 2：
+
+    // 输入：nums = [2,2,1,1,1,2,2]
+    // 输出：2
+
+    /**
+     * @param {number[]} nums
+     * @return {number}
+     */
+    // 解法1
+    // var majorityElement = function(nums) {
+    //   const obj = {};
+    //   let max = 0;
+    //   let res = 0;
+    //   for (let i = 0; i < nums.length; i++) {
+    //     if (obj[nums[i]]) {
+    //       obj[nums[i]]++;
+    //     } else {
+    //       obj[nums[i]] = 1;
+    //     }
+    //     max = Math.max(max, obj[nums[i]]);
+    //   }
+    //   Object.keys(obj).forEach(k => {
+    //     if (obj[k] === max) {
+    //       res = k;
+    //     }
+    //   });
+    //   return res;
+    // };
+    
+    // 解法2（想想一下电粒子的正负离子抵消之后 剩下的就代表电粒子的电性）
+    // var majorityElement = function(nums) {
+    //   // 目标值
+    //   let target = 0;
+
+    //   // 计数器
+    //   let count = 0;
+      
+    //   for (let i = 0; i < nums.length; i++) {
+    //     if (count === 0) {
+    //       // 假设当前值就是目标值
+    //       target = nums[i];
+    //       count++;
+    //     } else if (nums[i] !== target) {
+    //       // 当前值不等于目标值
+    //       count--;
+    //     } else {
+    //       count++;
+    //     }
+    //   }
+
+    //   return target;
+    // };
+
+    // 给定一个整数数组 nums，将数组中的元素向右轮转 k 个位置，其中 k 是非负数。
+
+    // 示例 1:
+
+    // 输入: nums = [1,2,3,4,5,6,7], k = 3
+    // 输出: [5,6,7,1,2,3,4]
+    // 解释:
+    // 向右轮转 1 步: [7,1,2,3,4,5,6]
+    // 向右轮转 2 步: [6,7,1,2,3,4,5]
+    // 向右轮转 3 步: [5,6,7,1,2,3,4]
+    // 示例 2:
+
+    // 输入：nums = [-1,-100,3,99], k = 2
+    // 输出：[3,99,-1,-100]
+    // 解释: 
+    // 向右轮转 1 步: [99,-1,-100,3]
+    // 向右轮转 2 步: [3,99,-1,-100]
+
+    /**
+     * @param {number[]} nums
+     * @param {number} k
+     * @return {void} Do not return anything, modify nums in-place instead.
+     */
+    // 方法一 需要额外的空间
+    // var rotate = function(nums, k) {
+    //   const n = nums.length;
+    //   const res = new Array(n);
+
+    //   for (let i = 0; i < n; i++) {
+    //     res[(i + k) % n] = nums[i];
+    //   }
+
+    //   for (let i = 0; i < res.length; i++) {
+    //     nums[i] = res[i];
+    //   }
+    // }
+    // 方法二 反转数组
+    // var reverse = function(nums, s, e) {
+    //   let i = s;
+    //   let j = e - 1;
+    //   while (i < j) {
+    //     [nums[i], nums[j]] = [nums[j], nums[i]];
+    //     i++;
+    //     j--;
+    //   }
+    // }
+    // var rotate = function(nums, k) {
+    //   k %= nums.length;
+    //   reverse(nums, 0, nums.length);
+    //   reverse(nums, 0, k);
+    //   reverse(nums, k, nums.length);
+    // }
+
+    // 斐波那契数列
+
+    /**
+     * @param {number} n
+     * @return {number}
+     */
+    // var fib = function(n) {
+    //   if (n < 2) return n;
+    //   let pre = 0; let cur = 1;
+    //   for (let i = 0; i < n - 1; i++) {
+    //     const sum = pre + cur;
+    //     pre = cur;
+    //     cur = sum;
+    //   }
+    //   return cur;
+    // };
+
+    // console.log(fib(4));
+
+    // 凑零钱问题
+    // 给你一个整数数组 coins ，表示不同面额的硬币；以及一个整数 amount ，表示总金额。
+
+    // 计算并返回可以凑成总金额所需的 最少的硬币个数 。如果没有任何一种硬币组合能组成总金额，返回 -1 。
+
+    // 你可以认为每种硬币的数量是无限的。
+
+    // 示例 1：
+
+    // 输入：coins = [1, 2, 5], amount = 11
+    // 输出：3 
+    // 解释：11 = 5 + 5 + 1
+    // 示例 2：
+
+    // 输入：coins = [2], amount = 3
+    // 输出：-1
+    // 示例 3：
+
+    // 输入：coins = [1], amount = 0
+    // 输出：0
+
+    /**
+     * @param {number[]} coins
+     * @param {number} amount
+     * @return {number}
+     */
+    // var coinChange = function(coins, amount) {
+    //   const m = new Map();
+    //   return dp(coins, amount, m);
+    // };
+
+    // var dp = function(coins, amount, m) {
+    //   if (amount === 0) return 0;
+    //   if (amount < 0) return -1;
+
+    //   if (m.has(amount)) return m.get(amount);
+    //   let res = Infinity;
+
+    //   for (let i = 0; i < coins.length; i++) {
+    //     // 子问题
+    //     let subProblem = dp(coins, amount - coins[i], m);
+
+    //     // 子问题无解
+    //     if (subProblem === -1) continue;
+
+    //     res = Math.min(res, 1 + subProblem);
+    //   }
+    //   m.set(amount, res === Infinity ? -1 : res);
+
+    //   return m.get(amount);
+    // }
+
+    // 输入：coins = [1, 2, 5], amount = 11
+    // 输出：3 
+    // 解释：11 = 5 + 5 + 1
+    // 示例 2：
+
+    // var coinChange = function(coins, amount) {
+    //   const dp = new Array(amount + 1).fill(amount + 1);
+
+    //   dp[0] = 0;
+
+    //   // 把i看成 amount：当目标金额为 i 时，至少需要 dp[i] 枚硬币凑出。
+    //   for (let i = 0; i < dp.length; i++) {
+    //     for (coin of coins) {
+
+    //       // 当前金额比面值coin小 无法凑出
+    //       if (i - coin < 0) continue;
+
+    //       // 要通过面值coin凑出金额i 就要知道(金额i - 面值coin)至少需要多少几枚硬币 也就是dp[i - coin]
+    //       dp[i] = Math.min(dp[i], 1 + dp[i - coin]);
+    //     }
+    //   }
+
+    //   return dp[amount] === amount + 1 ? -1 : dp[amount];
+    // };
+
+    // console.log(coinChange([5, 2, 1], 11));
+
+    // 买卖股票最佳时机
+    // 给定一个数组 prices ，它的第 i 个元素 prices[i] 表示一支给定股票第 i 天的价格。
+
+    // 你只能选择 某一天 买入这只股票，并选择在 未来的某一个不同的日子 卖出该股票。设计一个算法来计算你所能获取的最大利润。
+
+    // 返回你可以从这笔交易中获取的最大利润。如果你不能获取任何利润，返回 0 。
+
+    // 示例 1：
+
+    // 输入：[7,1,5,3,6,4]
+    // 输出：5
+    // 解释：在第 2 天（股票价格 = 1）的时候买入，在第 5 天（股票价格 = 6）的时候卖出，最大利润 = 6-1 = 5 。
+    //     注意利润不能是 7-1 = 6, 因为卖出价格需要大于买入价格；同时，你不能在买入前卖出股票。
+    // 示例 2：
+
+    // 输入：prices = [7,6,4,3,1]
+    // 输出：0
+    // 解释：在这种情况下, 没有交易完成, 所以最大利润为 0。
+
+    /**
+     * @param {number[]} prices
+     * @return {number}
+     */
+    // var maxProfit = function(prices) {
+    //   // 交易：买入+卖出代表一次完整的交易
+    //   // 状态：i代表第几天 k代表当天所能交易的最大次数 0代表没有持有 1代表当前持有股票
+      
+    //   /**
+    //    * dp[i][k][0]：代表的就是第i天 最多可交易k次 且当天没有持有的 最大利润
+    //    * 今天没有持有可以分为两种：
+    //    * 1. 昨天就没有持有 且 今天无交易操作 dp[i-1][k][0]
+    //    * 2. 昨天有持有 且 今天卖出 dp[i-1][k][1] + prices[i]
+    //    */
+    //   // dp[i][k][0] = Math.max(dp[i-1][k][0], dp[i-1][k][1] + prices[i]);
+
+    //   /**
+    //    * dp[i][k][1]：代表的就是第i天 最多可交易k次 且当天持有的 最大利润
+    //    * 今天持有也可以分为两种：
+    //    * 1. 昨天就已经持有 且 今天无交易操作 dp[i-1][k][1]
+    //    * 2. 昨天未持有 且 今天买入(会消耗一次 所以昨天最多只能交易k-1次) dp[i-1][k-1][0] - prices[i]
+    //    */
+    //   // dp[i][k][1] = Math.max(dp[i-1][k][1], dp[i-1][k-1][0] - prices[i]);
+
+    //   /**
+    //    * 边界情况
+    //    * dp[-1][k][0] = 0 -1天还没交易 利润为0
+    //    * dp[-1][k][1] = -Infinity -1天还没交易 不可能持有 利润定义为无限小（方便取最大值）
+    //    * dp[i][0][0] = 0  k = 0 代表不允许交易 利润为0
+    //    * dp[i][0][1] = -Infinity 在不允许交易的情况下是不允许持有的 定义为无限小
+    //    */
+
+    //    // 这道题 k = 1 直接简化为二维数组 dp[i][0] dp[i][1]
+    //    const n = prices.length;
+
+    //    for (let i = 0; i < n; i++) {
+    //      if (i - 1 < 0) {
+    //        dp[i][0] = 0;
+    //        dp[i][1] = -Infinity;  
+    //        continue;
+    //      }
+    //      dp[i][0] = Math.max(dp[i-1][0], dp[i-1][1] + prices[i]);
+    //      dp[i][1] = Math.max(dp[i-1][1], - prices[i]);
+    //    }
+    //    return dp[n-1][0];
+    // };
+
+    var maxProfit = function(prices) {
+        var n = prices.length;
+        var dp_i_0 = 0, dp_i_1 = -Infinity;
+        for (var i = 0; i < n; i++) {
+            var temp = dp_i_0;
+            dp_i_0 = Math.max(dp_i_0, dp_i_1 + prices[i]);
+            dp_i_1 = Math.max(dp_i_1, temp - prices[i]);
+        }
+        return dp_i_0;
+    };
+
+    console.log(maxProfit([7,1,5,3,6,4]));
+
+
+  </script>
+</body>
+
+</html>
