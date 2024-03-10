@@ -1,0 +1,320 @@
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>实现Promise A+规范</title>
+
+  <script>
+    /**
+     * Promise所具有的特征：
+     * 1. 分为三个状态：pending、fulfilled、rejected
+     * 2. new Promise时，需要传入executor()执行器 执行器立即执行 并返回新的promise
+     * 3. executor接收两个参数 resolve和reject
+     * 4. promise默认状态是pending
+     * 5. promise有一个value保存成功的状态的值，可以是undefined / thenable / promise
+     * 6. promise有一个reason记录失败的值
+     * 7. promise状态不可逆：pending -> fulfilled /  pending -> rejected
+     * 8. promise必须要有一个then方法，有两个参数分别是成功的回调函数onFulfilled和失败的回调函数onRejected 并且返回一个新的promise
+     * 9. 如果调用then promise已经成功 则执行onFulfilled 参数是promise的value
+     * 10. 如果调用then promise已经失败 则执行onRejected 参数是promise的reason
+     * 11. 如果调用then失败 则会将失败的异常值抛到下一个then的onRejected方法的参数中
+     * 12. 如果调用then成功 则会将成功的值做为参数传递给下一个then
+     */
+
+    // 安装 npm install -g promises-aplus-tests
+    // 执行测试命令  promises-aplus-tests _promise.js
+
+    const PENDING = "PENDING";
+    const FULFILLED = "FULFILLED";
+    const REJECTED = "REJECTED";
+
+    const resolvePromise = (promise2, x, resolve, reject) => {
+      // 自己等待自己导致循环引用 返回异常调用reject结束promise链
+      if (promise2 === x) {
+        return reject(
+          new TypeError("Chaining cycle detected for promise #<Promise>")
+        );
+      }
+
+      // 如果同时调用 resolvePromise 和 rejectPromise ，或者对同一参数进行多次调用，则第一个调用优先，并且忽略任何后续调用。
+      let used;
+
+      if ((typeof x === "object" && x !== null) || typeof x === "function") {
+        try {
+          let then = x.then;
+          // 代表x是一个promise
+          if (typeof then === "function") {
+            // x代表的这个promise执行完 成功的话会执行then的成功回调 失败的话会执行then的失败回调
+            // 只需要把最外层的resolve和reject传递进去等待这个链式的最终结束
+            then.call(
+              x,
+              (res) => {
+                if (used) return;
+                used = true;
+                // 有可能res也是一个promise 递归判断直到结束
+                resolvePromise(promise2, res, resolve, reject);
+              },
+              (err) => {
+                if (used) return;
+                used = true;
+                reject(err);
+              }
+            );
+          } else {
+            // 普通对象
+            resolve(x);
+          }
+        } catch (e) {
+          if (used) return;
+          used = true;
+          reject(e);
+        }
+      } else {
+        // x是普通值，直接调用resolve结束promise
+        resolve(x);
+      }
+    };
+
+    class _promise {
+      constructor(executor) {
+        // 记录状态
+        this.state = PENDING;
+        // 成功状态值
+        this.value = undefined;
+        // 失败状态值
+        this.reason = undefined;
+
+        // 记录需要执行成功的回调列表
+        this.onResolveCallbacks = [];
+        // 记录需要执行失败的回调列表
+        this.onRejectedCallbacks = [];
+
+        let resolve = (value) => {
+          // 如果value是一个promise
+          if (value instanceof _promise) {
+            return value.then(resolve, reject);
+          }
+          // 如果当前是pending状态
+          if (this.state === PENDING) {
+            this.state = FULFILLED;
+            this.value = value;
+            this.onResolveCallbacks.forEach((cb) => cb());
+          }
+        };
+
+        let reject = (reason) => {
+          // 如果当前是pending状态
+          if (this.state === PENDING) {
+            this.state = REJECTED;
+            this.reason = reason;
+            this.onRejectedCallbacks.forEach((cb) => cb());
+          }
+        };
+
+        try {
+          executor(resolve, reject);
+        } catch (e) {
+          this.reject(e);
+        }
+      }
+
+      static resolve(value) {
+        return new _promise((resolve, reject) => {
+          resolve(value);
+        });
+      }
+
+      static reject(value) {
+        return new _promise((resolve, reject) => {
+          reject(value);
+        });
+      }
+
+      static all(promises) {
+        if (!Array.isArray(promises)) {
+          const type = typeof promises;
+          return new TypeError(`TypeError: ${type} ${promises} is not iterable`);
+        }
+
+        return new _promise((resolve, reject) => {
+          let orderIndex = 0;
+          const result = [];
+          if (promises.length === 0) {
+            resolve(result);
+          } else {
+            function procressValue(value, i) {
+              result[i] = value;
+              if (++orderIndex === promises.length) {
+                resolve(result);
+              }
+            }
+            for (let i = 0; i < promises.length; i++) {
+              let data = promises[i];
+              // 用Promise.resolve包一下 如果data是普通值也会有then方法 直接执行then的成功回调就可以了
+              // 如果其中一个promise失败 则直接将返回的promise置为失败即可
+              Promise.resolve(data).then(val => procressValue(val, i), err => {
+                reject(err);
+                return;
+              });
+            }
+          }
+        });
+      }
+
+      static race(promises) {
+        if (!Array.isArray(promises)) {
+          const type = typeof promises;
+          return new TypeError(`TypeError: ${type} ${promises} is not iterable`);
+        }
+
+        return new _promise((resolve, reject) => {
+          if (promises.length === 0) {
+            resolve();
+            return;
+          }
+          for (let i = 0; i < promises.length; i++) {
+            Promise.resolve(promises[i]).then(value => {
+              resolve(value);
+              return;
+            }, error => {
+              reject(error);
+              return;
+            })
+          }
+        })
+      }
+
+      then(onFulFilled, onRejected) {
+        // 判断参数类型
+        onFulFilled = typeof onFulFilled === "function" ? onFulFilled : (v) => v;
+        onRejected =
+          typeof onRejected === "function"
+            ? onRejected
+            : (error) => {
+              throw error;
+            };
+
+        // 每次调用都返回一个新的promise
+        let promise2 = new _promise((resolve, reject) => {
+          // 如果当前promise状态为成功
+          if (this.state === FULFILLED) {
+            // setTimeout模拟promise产生的微任务，then里面的方法想要执行，需要等待promise的状态完成或失败
+            setTimeout(() => {
+              try {
+                // 执行成功的回调
+                const x = onFulFilled(this.value);
+                resolvePromise(promise2, x, resolve, reject);
+              } catch (e) {
+                // 异常的话，直接调用新产生的promise2的reject方法，结束promise链
+                reject(e);
+              }
+            }, 0);
+          }
+
+          // 如果当前promise状态为失败
+          if (this.state === REJECTED) {
+            setTimeout(() => {
+              try {
+                const x = onRejected(this.reason);
+                resolvePromise(promise2, x, resolve, reject);
+              } catch (e) {
+                reject(e);
+              }
+            }, 0);
+          }
+
+          // 如果当前promsie为pending 说明上一个promise还没结束 需要等待其结束后 再依次去执行链式then中所追加的所有回调方法
+          // 回调方法中也有可能返回新的promise，当前的then产生的promise2的状态取决于返回的新的promise的状态 也就是x的状态
+          if (this.state === PENDING) {
+            this.onResolveCallbacks.push(() => {
+              setTimeout(() => {
+                try {
+                  const x = onFulFilled(this.value);
+                  resolvePromise(promise2, x, resolve, reject);
+                } catch (e) {
+                  reject(e);
+                }
+              }, 0);
+            });
+            this.onRejectedCallbacks.push(() => {
+              setTimeout(() => {
+                try {
+                  const x = onRejected(this.reason);
+                  resolvePromise(promise2, x, resolve, reject);
+                } catch (e) {
+                  reject(e);
+                }
+              }, 0);
+            });
+          }
+        });
+        return promise2;
+      }
+    }
+
+    // 异常捕获
+    _promise.prototype.catch = function (errorCb) {
+      return this.then(null, errorCb);
+    }
+
+    // finally不是代表最终 而是代表一定会执行 返回的结果是透传第一个promise的结果
+    _promise.prototype.finally = function (cb) {
+      return this.then(value => {
+        return Promise.resolve(cb()).then(() => value);
+      }, error => {
+        return Promise.resolve(cb()).then(() => { throw error });
+      })
+    };
+
+    _promise.defer = _promise.deferred = function () {
+      let dfd = {};
+      dfd.promise = new _promise((resolve, reject) => {
+        dfd.resolve = resolve;
+        dfd.reject = reject;
+      });
+      return dfd;
+    };
+
+    // 测试finally 返回的结果是透传的 finally中返回的resove结果会被忽略
+    // _promise.resolve(456).finally(() => {
+    //   return new _promise((resolve, reject) => {
+    //     setTimeout(() => {
+    //       resolve(123)
+    //     }, 3000);
+    //   })
+    // }).then(data => {
+    //   console.log(data, 'success')
+    // }).catch(err => {
+    //   console.log(err, 'error')
+    // })
+
+    let p1 = new _promise((resolve, reject) => {
+      setTimeout(() => {
+        resolve('ok1');
+      }, 1000);
+    })
+
+    let p2 = new _promise((resolve, reject) => {
+      setTimeout(() => {
+        resolve('ok2');
+      }, 1000);
+    })
+
+    _promise.all([1, 2, 3, p1, p2]).then(data => {
+      console.log('resolve', data);
+    }, err => {
+      console.log('reject', err);
+    })
+
+
+    // module.exports = _promise;
+
+  </script>
+</head>
+
+<body>
+</body>
+
+</html>
