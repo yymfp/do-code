@@ -10,38 +10,83 @@
     const source = {
       a: 123,
       b: [22, 33],
+      d: true,
       c: { name: 222, obj: { testArr: [] } },
+      e: undefined,
+      f: function a() {},
+      g: null,
+      s: 'ssdd',
+      o: Symbol(1)
     };
 
+    // const map = new WeakMap();
+    // function deepClone(source) {
+    //   if (typeof source === "string" || typeof source === "number") {
+    //     return source;
+    //   }
+
+    //   if (map.get(source)) {
+    //     return map.get(source);
+    //   }
+
+    //   if (Array.isArray(source)) {
+    //     const result = [];
+    //     map.set(source, result);
+    //     for (let [index, value] of source.entries()) {
+    //       result[index] = deepClone(value);
+    //     }
+    //     return result;
+    //   }
+
+    //   if (Object.prototype.toString.call(source) === "[object Object]") {
+    //     const result = {};
+    //     map.set(source, result);
+    //     for (let [key, value] of Object.entries(source)) {
+    //       result[key] = deepClone(value);
+    //     }
+    //     return result;
+    //   }
+    // }
+
+    // let target = deepClone(source);
+
+
     const map = new WeakMap();
-    function deepClone(source) {
-      if (typeof source === "string" || typeof source === "number") {
-        return source;
-      }
 
-      if (map.get(source)) {
-        return map.get(source);
-      }
+    const _forEach = (arr, cb) => {
+      let i = 0;
+      while (i < arr.length) {
+        cb(arr[i], i);
+        i++;
+      };
+    };
 
-      if (Array.isArray(source)) {
-        const result = [];
-        map.set(source, result);
-        for (let [index, value] of source.entries()) {
-          result[index] = deepClone(value);
+    const deepClone = (data) => {
+      if (typeof data === "object" && data !== null) {
+        const obj = new data.constructor(); // {} or []
+        if (map.has(data)) {
+          return map.get(data);
         }
-        return result;
-      }
-
-      if (Object.prototype.toString.call(source) === "[object Object]") {
-        const result = {};
-        map.set(source, result);
-        for (let [key, value] of Object.entries(source)) {
-          result[key] = deepClone(value);
-        }
-        return result;
+        map.set(data, obj);
+        const isArray = Array.isArray(data);
+        const keys = isArray ? undefined : Object.keys(data);
+        _forEach(keys || data, (val, key) => {
+          if (keys) {
+            key = val;
+          }
+          obj[key] = deepClone(data[key]);
+        })
+        return obj;
+      } else {
+        return data;
       }
     }
-
+    source.source = source;
     let target = deepClone(source);
+    source.a = '222';
+    source.b[0] = 333333;
+    source.c.obj.testArr.push(111);
+
+    console.log(source, target);
   </script>
 </html>
