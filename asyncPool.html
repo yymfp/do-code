@@ -7,43 +7,112 @@
   </head>
   <body></body>
   <script>
-    function asyncRequest(timeout) {
+    // function asyncRequest(timeout) {
+    //   return new Promise((resolve, reject) => {
+    //     setTimeout(() => {
+    //       console.log(timeout);
+    //       resolve(timeout);
+    //     }, timeout);
+    //   });
+    // }
+
+    // // 异步任务队列
+    // async function asyncPool(limit, iterable, iteratorFn) {
+    //   const all = [];
+    //   const quque = new Set();
+
+    //   for (let item of iterable) {
+    //     const task = Promise.resolve(iteratorFn(item))
+    //     all.push(task);
+    //     task.then(() => quque.delete(task))
+    //     quque.add(task);
+    //     if (quque.size >= limit) {
+    //       console.log("等待中", quque.size);
+    //       await Promise.race(quque);
+    //     }
+    //   }
+
+    //   return Promise.all(all);
+    // }
+
+    // 异步任务
+    function asyncRequest(time) {
       return new Promise((resolve, reject) => {
         setTimeout(() => {
-          console.log(timeout);
-          resolve(timeout);
-        }, timeout);
+          console.log(time);
+          resolve(time);
+        }, time);
       });
-    }
+    };
 
-    // 异步任务队列
-    async function asyncPool(limit, iterable, iteratorFn) {
-      const all = [];
-      const quque = new Set();
+    // // 异步任务队列
+    // async function asyncPool(limit, iterableList, iteratorFn) {
+    //   let quque = new Set();
 
-      for (let item of iterable) {
-        const task = Promise.resolve(iteratorFn(item))
-        all.push(task);
-        task.then(() => quque.delete(task))
-        quque.add(task);
-        if (quque.size >= limit) {
-          console.log("等待中", quque.size);
-          await Promise.race(quque);
-        }
+    //   for (let item of iterableList) {
+    //     const task = Promise.resolve(iteratorFn(item));
+    //     quque.add(task);
+    //     // 完成一个删除一个
+    //     task.then(() => quque.delete());
+
+    //     if (quque.size > limit) {
+    //       console.log('等待中', quque.size, item);
+    //       await Promise.race(quque);
+    //     }
+    //   }
+
+    //   return Promise.all(quque);
+    // };
+
+    // async function start() {
+    //   const res = await asyncPool(
+    //     5,
+    //     [2000, 1000, 5000, 3000, 4000, 8000, 200, 1300, 500, 6200, 7800, 10000],
+    //     asyncRequest
+    //   );
+    //   console.log(res, "结束了");
+    // }
+
+    // start();
+
+    class AsyncPool {
+      constructor(num) {
+        this.quque = [];
+        // 最大并行的任务数量
+        this.limit = num;
+        // 当前运行的任务数量
+        this.curTasks = 0;
       }
 
-      return Promise.all(all);
+      addQuque(task) {
+        this.quque.push(task);
+        this.runTask();
+      }
+
+      runTask() {
+        if (this.curTasks < this.limit && this.quque.length > 0) {
+          const task = this.quque.shift();
+          this.curTasks++;
+          task.then(() => {
+            this.curTasks--;
+            this.runTask();
+          }).catch(err => {
+            this.curTasks--;
+            this.runTask();
+          });
+        }
+
+        if (this.curTasks >= this.limit) console.log('等待中', this.curTasks);
+      }
     }
 
-    async function start() {
-      const res = await asyncPool(
-        5,
-        [2000, 1000, 5000, 2000, 4000, 1000],
-        asyncRequest
-      );
-      console.log(res, "结束了");
-    }
-
-    start();
+    const p = new AsyncPool(5);
+    p.addQuque(asyncRequest(8000));
+    p.addQuque(asyncRequest(2000));
+    p.addQuque(asyncRequest(4000));
+    p.addQuque(asyncRequest(7000));
+    p.addQuque(asyncRequest(9000));
+    p.addQuque(asyncRequest(1000));
+    p.addQuque(asyncRequest(3000));
   </script>
 </html>

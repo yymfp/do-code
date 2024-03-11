@@ -1,0 +1,72 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>tree to array</title>
+</head>
+<body>
+  <script>
+    const tree = {
+      value: '节点1',
+      children: [
+        {
+          value: '节点2',
+          children: [
+            {
+              value: '节点4',
+            }
+          ],
+        },
+        {
+          value: '节点3',
+          children: [
+            {
+              value: '节点5',
+            },
+            {
+              value: '节点6'
+            }
+          ],
+        }
+      ],
+    };
+
+
+    // 深度优先遍历
+    // const treeToArray = (tree) => {
+    //   const list = [];
+    //   traverse(tree, list);
+    //   return list;
+    // }
+
+    // const traverse = (tree, list) => {
+    //   list.push(tree.value);
+    //   if (Array.isArray(tree.children)) {
+    //     for (let item of tree.children) {
+    //       traverse(item, list);
+    //     }
+    //   }
+    // };
+
+    // 广度优先遍历
+    const treeToArrayBFS = (tree) => {
+      const quque = [tree];
+      const list = [];
+
+      while (quque.length > 0) {
+        const node = quque.shift();
+        list.push(node.value);
+
+        if (Array.isArray(node.children)) {
+          quque.push(...node.children);
+        }
+      }
+
+      return list;
+    };
+
+    console.log(treeToArrayBFS(tree));
+  </script>
+</body>
+</html>
