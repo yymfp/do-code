@@ -163,6 +163,13 @@
         });
       }
 
+      static allSettled(promises) {
+        const rejectHandler = reason => ({ status: 'rejected', reason });
+        const resolveHandler = value => ({ status: 'fulfilled', value });
+        const convertedPromises = promises.map(p => Promise.resolve(p).then(resolveHandler, rejectHandler));
+        return Promise.all(convertedPromises);
+      }
+
       static race(promises) {
         if (!Array.isArray(promises)) {
           const type = typeof promises;
@@ -292,7 +299,7 @@
 
     let p1 = new _promise((resolve, reject) => {
       setTimeout(() => {
-        resolve('ok1');
+        reject('ok1');
       }, 1000);
     })
 
@@ -302,7 +309,7 @@
       }, 1000);
     })
 
-    _promise.all([1, 2, 3, p1, p2]).then(data => {
+    _promise.allSettled([1, 2, 3, p1, p2]).then(data => {
       console.log('resolve', data);
     }, err => {
       console.log('reject', err);
