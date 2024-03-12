@@ -1,0 +1,29 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>手写new</title>
+</head>
+<body>
+  <script>
+    /**
+     * 1. 创建空对象
+     * 2. 关联原型链
+     * 3. 执行构造函数并绑定this
+     * 4. 返回新对象
+     */
+    function _new(func) {
+      const O = Object.create(null);
+      O.__proto__ = func.prototype;
+      const res = func.apply(O);
+
+      // 判断构造函数返回的是不是对象
+      if (res && (typeof res === "object" || typeof res === "function")) {
+        return res;
+      }
+      return O;
+    };
+  </script>
+</body>
+</html>

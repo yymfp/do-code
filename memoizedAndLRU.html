@@ -1,0 +1,93 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>实现一个缓存函数memorized 和 LRU</title>
+</head>
+<body>
+  <script>
+    function memorized(fn) {
+      const cache = new Map();
+
+      return function(...args) {
+        const key = JSON.stringify(args);
+
+        if (cache.has(key)) {
+          return cache.get(key);
+        }
+
+        const result = fn.apply(this, args);
+        cache.set(key, result);
+        return result;
+      }
+    }
+
+    // 使用实例
+    const fib = memorized(function(num) {
+      if (num <= 1) return num;
+      return fib(num - 1) + fib(num - 2);
+    });
+    // console.log(fib(10));
+
+    // LRU 特点：有固定的长度大小 每次读取都会更新位置 每次设置也会更新位置 如果空间不够的话 就删除掉最久没有操作过的那条数据
+    class LRUCache {
+      constructor(limit) {
+        this.limit = limit;
+        this.data = new Map();
+      }
+
+      get(key) {
+        let result;
+        if (!this.data.has(key)) {
+          return null;
+        }
+
+        result = this.data.get(key);
+        this.data.delete(key);
+        this.data.set(key, result);
+
+        return result;
+      }
+
+      put(key, value) {
+        if (this.data.has(key)) {
+          this.data.delete(key);
+        } else if (this.data.size === this.limit) {
+          // 找到最久没操作过的数据
+          const key = this.data.keys().next().value;
+          this.data.delete(key);
+        }
+        this.data.set(key, value);
+      }
+    }
+
+    function lruMemoized(fn, limit) {
+      const lruCache = new LRUCache(limit);
+
+      return function(...args) {
+        const key = JSON.stringify(args);
+
+        const data = lruCache.get(key);
+        if (data) {
+          return data;
+        }
+
+        const result = fn.apply(this, args);
+
+        lruCache.put(key, result);
+
+        return result;
+      }
+    }
+
+    // 使用实例
+    const lruFib = lruMemoized(function(n) {
+      if (n <= 1) return n;
+      return lruFib(n - 1) + lruFib(n - 2);
+    }, 5);
+
+    console.log(lruFib(10));
+  </script>
+</body>
+</html>

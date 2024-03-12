@@ -1,0 +1,38 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>手写Call</title>
+</head>
+<body>
+  <script>
+    Function.prototype._call = function(context) {
+      if (!context) {
+        context = window ? window : global;
+      }
+
+      // this代表调用_call的函数
+      const fn = this;
+      context.fn = fn;
+      const args = [...arguments].splice(1);
+
+      const result = context.fn(...args);
+      delete context.fn;
+
+      return result;
+    };
+
+    const obj = {
+      name: 'hhhh',
+      say(a, b) {
+        console.log(this.name, 'sum:', a + b);
+      }
+    };
+
+    const obj1 = {name: 'zzz'};
+
+    obj.say._call(obj1, 11, 1);
+  </script>
+</body>
+</html>

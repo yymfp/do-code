@@ -1,0 +1,28 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>手写Instanceof</title>
+</head>
+<body>
+  <script>
+    function instance_of (L, R) {
+      const O = R.prototype;
+      
+      L = L.__proto__;
+      while(true) {
+        if (L === null) { // Object.prototype.__proto__ === null
+          return false;
+        }
+        if (L === O) {
+          return true;
+        }
+        L = L.__proto__;
+      }
+    }
+
+    console.log(instance_of([1,2], Object));
+  </script>
+</body>
+</html>

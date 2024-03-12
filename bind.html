@@ -1,0 +1,64 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>手写bind</title>
+</head>
+<body>
+  <script>
+    Function.prototype._bind = function(context) {
+      if (typeof this !== "function") {
+        return new TypeError('Not function!');
+      }
+
+      if (!context) {
+        context = window ? window : global;
+      }
+
+      const self = this;
+
+      const args = [...arguments].splice(1);
+
+      // 创建空函数对象
+      function Fn() {};
+
+      function bound(...args1) {
+        const rest = args.concat(args1);
+        // 特殊处理const b = fn.bind(this); const O = new b() 这种情况  此时O就代表下方的this 它需要有fn上的原型方法和属性
+        return self.apply(this instanceof Fn ? this : context, rest);
+      }
+
+      // 关联原型链
+      Fn.prototype = this.prototype;
+      bound.prototype = new Fn();
+
+      return bound;
+    };
+
+    const obj1 = {
+      name: 'hhh',
+    }
+
+    const obj2 = {
+      name: 'ssss',
+    }
+
+    function say(a, b) {
+      this.age = 20;
+      console.log(this.name, 'sum:', a + b);
+    }
+
+    say.prototype.friend = 'pppp';
+
+    const f = say._bind(obj2, 10);
+    f(1,2); // ssss sum: 11
+
+    const O = new f(1,2);
+
+    console.log(O.age); // 20
+    console.log(O.friend); // pppp
+    
+  </script>
+</body>
+</html>

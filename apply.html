@@ -1,0 +1,41 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>手写Apply</title>
+</head>
+<body>
+  <script>
+    Function.prototype._apply = function(context, args) {
+      if (!context) {
+        context = window ? window : global;
+      }
+
+      const fn = this;
+      context.fn = fn;
+      let result;
+      if (!args) {
+        result = context.fn(args);
+      } else if(Array.isArray(args)) {
+        result = context.fn(...args);
+      }
+      delete context.fn;
+      return result;
+    };
+
+    const obj1 = {
+      name: 'hhh',
+      say(a, b) {
+        console.log(this.name, 'sum:', a + b);
+      }
+    };
+
+    const obj2 = {
+      name: 'sss',
+    }
+
+    obj1.say._apply(obj2, [11, 2]);
+  </script>
+</body>
+</html>
