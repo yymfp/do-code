@@ -1,0 +1,74 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>实现一个EventEmitter</title>
+</head>
+<body>
+  <script>
+    // 实现on emit once off
+    class EventEmitter {
+
+      constructor() {
+        this.events = {};
+      }
+
+      on(type, handler) {
+        if (!this.events[type]) {
+          this.events[type] = [];
+        }
+        this.events[type].push(handler);
+      }
+
+      off(type, handler) {
+        if (!this.events[type]) return;
+        this.events[type] = this.events[type].filter(fn => fn !== handler);
+      }
+
+      once(type, handler) {
+        const onceWarp = (...args) => {
+          handler.apply(this, args);
+          this.off(type, onceWarp);
+        };
+        this.on(type, onceWarp);
+      }
+
+      emit(type, ...args) {
+        if (this.events[type]) {
+          this.events[type].forEach(fn => {
+            fn.apply(this, args);
+          })
+        }
+      }
+    }
+
+    const emitter = new EventEmitter();
+
+    const listener1 = function (data) {
+      console.log('listener1----', data);
+    }
+
+    const listener2 = function (data) {
+      console.log('listener2----', data);
+    }
+
+    emitter.on('event1', listener1);
+    emitter.on('event1', listener2);
+
+    emitter.emit('event1', 'hhhh');
+
+    emitter.off('event1', listener1);
+
+    emitter.emit('event1', 'sss');
+
+    emitter.once('event2', (data) => {
+      console.log('event once', data);
+    });
+
+    emitter.emit('event2', '1111');
+
+    emitter.emit('event2', '222');
+  </script>
+</body>
+</html>

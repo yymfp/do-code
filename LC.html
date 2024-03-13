@@ -397,10 +397,10 @@
     //   return result.concat(left.slice(i).concat(right.slice(j)));
     // }
     // 快速排
-    // var sortArray = function(nums) {
-    //   if (nums.length <= 1) return nums;
-    //   sort(nums, 0, nums.length - 1);
-    // }
+    var sortArray = function(nums) {
+      if (nums.length <= 1) return nums;
+      sort(nums, 0, nums.length - 1);
+    }
 
     // var sort = function(nums, l, r) {
     //   if (l < r) {
@@ -433,9 +433,42 @@
     //   [nums[l], nums[r]] = [nums[r], nums[l]];
     // }
 
+    // 方法二
+    // function sort(nums, l, r) {
+    //   if (l < r) {
+    //     const mid = q(nums, l, r);
+    //     sort(nums, l, mid - 1);
+    //     sort(nums, mid + 1, r);
+    //   }
+    // }
+
+    // function q(nums, l, r) {
+    //   // 将l作为基准值
+    //   const temp = nums[l];
+
+    //   while(l < r) {
+
+    //     // 如果r比基准值大 则往前找
+    //     while(l < r && nums[l] <= nums[r]) {
+    //       r--;
+    //     }
+    //     // 找到了r比l小的 或者是l >= r 将r赋值给l
+    //     nums[l] = nums[r];
+
+    //     // 如果l比基准值小 则往后找 
+    //     while(l < r && temp >= nums[l]) {
+    //       l++;
+    //     }
+    //     // 找到了l比基准值大的 或者l >= r
+    //     nums[r] = nums[l];
+    //   }
+    //   nums[l] = temp;
+
+    //   return l;
+    // }
+
     // const data = [5,3,1,1,1,3,5,73,1];
     // sortArray(data);
-
     // console.log(data);
 
     // 215. 数组中的第K个最大元素
@@ -933,18 +966,18 @@
     //    return dp[n-1][0];
     // };
 
-    var maxProfit = function(prices) {
-        var n = prices.length;
-        var dp_i_0 = 0, dp_i_1 = -Infinity;
-        for (var i = 0; i < n; i++) {
-            var temp = dp_i_0;
-            dp_i_0 = Math.max(dp_i_0, dp_i_1 + prices[i]);
-            dp_i_1 = Math.max(dp_i_1, temp - prices[i]);
-        }
-        return dp_i_0;
-    };
+    // var maxProfit = function(prices) {
+    //     var n = prices.length;
+    //     var dp_i_0 = 0, dp_i_1 = -Infinity;
+    //     for (var i = 0; i < n; i++) {
+    //         var temp = dp_i_0;
+    //         dp_i_0 = Math.max(dp_i_0, dp_i_1 + prices[i]);
+    //         dp_i_1 = Math.max(dp_i_1, temp - prices[i]);
+    //     }
+    //     return dp_i_0;
+    // };
 
-    console.log(maxProfit([7,1,5,3,6,4]));
+    // console.log(maxProfit([7,1,5,3,6,4]));
 
 
   </script>
