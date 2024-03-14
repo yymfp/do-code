@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body></body>
+  <script>
+    //动态路由参数匹配 /user/:userId/:name + /user/123/zongwei ==> {userId: 123}
+    // {
+    //     "userId": "123",
+    //     "name": "zongwei"
+    // }
+
+    function dyMathc(url1, url2) {
+      const list1 = url1.split('/');
+      const list2 = url2.split('/');
+      const result = {};
+
+      if (list1.length !== list2.length) return result;
+
+      for (let [i, val] of list1.entries()) {
+        if (val.includes(':')) {
+          let key = val.slice(1);
+          result[key] = list2[i];
+        }
+      }
+
+      return result;
+    }
+
+
+
+
+
+
+
+
+
+    // function dyMathc(rule, str) {
+    //   const ruleArr = rule.split("/");
+    //   const strArr = str.split("/");
+      
+    //   if (ruleArr.length !== strArr.length) return {};
+
+    //   let res = {};
+    //   for (let [index, item] of ruleArr.entries()) {
+    //     if (item.startsWith(":")) {
+    //       const key = item.slice(1);
+    //       const value = strArr[index];
+    //       res[key] = value;
+    //     }
+    //   }
+
+    //   return res;
+    // }
+    console.log(dyMathc("/user/:userId/:name/", "/user/123/zongwei/"));
+  </script>
+</html>

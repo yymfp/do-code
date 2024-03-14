@@ -17,34 +17,57 @@
       "4.3.5.1",
       "1.2.3.4.5",
     ];
-    // 利用原生 sort 函数进行比较
 
-    function compare(a, b) {
-      const arr1 = a.split('.');
-      const arr2 = b.split('.');
+    function compare(arr1, arr2) {
+      const list1 = arr1.split('.');
+      const list2 = arr2.split('.');
+
       let index = 0;
-
       while(true) {
-        const item1 = arr1[index];
-        const item2 = arr2[index];
+        const value1 = list1[index];
+        const value2 = list2[index];
+
         index++;
 
-        if (item1 === item2) {
+        if (value1 === value2) {
           continue;
         }
 
-        if (item1 && item2) {
-          return Number(item1) - Number(item2);
+        if (value1 === undefined || value2 === undefined) {
+          return list1.length - list2.length;
         }
 
-        if (!item1 || !item2) {
-          return arr1.length - arr2.length;
-        }
+        return Number(value1) - Number(value2);
       }
     }
 
+
     arr.sort((a, b) => compare(a, b));
-    console.log(arr)
-    debugger
+
+    console.log(arr);
+
+
+    // 利用原生 sort 函数进行比较
+
+    // function compare(a, b) {
+    //   const arr1 = a.split('.');
+    //   const arr2 = b.split('.');
+    //   let index = 0;
+    //   while(true) {
+    //     const value1 = arr1[index];
+    //     const value2 = arr2[index];
+    //     index++;
+    //     if (value1 === undefined || value2 === undefined) {
+    //       return arr1.length - arr2.length;
+    //     }
+    //     if (value1 === value2) {
+    //       continue;
+    //     }
+    //     return Number(value1) - Number(value2);
+    //   }
+    // }
+
+    // arr.sort((a, b) => compare(a, b));
+    // console.log(arr)
   </script>
 </html>

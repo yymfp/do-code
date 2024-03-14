@@ -5,7 +5,7 @@
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Document</title>
+  <title>对象扁平化</title>
 </head>
 
 <body></body>
@@ -28,31 +28,61 @@
   //     "g": null,  值为null或者undefined，丢弃
   // };
 
-  function rec(preKey, value, result) {
-    if (typeof value === "number" || typeof value === "string" || typeof value === "boolean") {
-      result[preKey] = value;
+
+  function flatObject(obj) {
+    const result = {};
+    for (let [key, val] of Object.entries(obj)) {
+      rec(result, key, val);
     }
 
-    if (Array.isArray(value)) {
-      for (let [index, target] of value.entries()) {
-        rec(`${preKey}[${index}]`, target, result);
-      }
-    }
+    return result;
+  }
 
-    if (Object.prototype.toString.call(value) === "[object Object]") {
-      for (let [key, target] of Object.entries(value)) {
-        rec(`${preKey}.${key}`, target, result);
+
+  function rec(result, key, val) {
+    if (val && typeof val === "object" && !Array.isArray(val)) {
+      for (let [i, data] of Object.entries(val)) {
+        rec(result, `${key}.${i}`, data);
       }
+    } else if (Array.isArray(val)) {
+      for (let [i, data] of val.entries()) {
+        rec(result, `${key}[${i}]`, data);
+      }
+    } else if (val !== null && val !== undefined) {
+      result[key] = val;
     }
   }
 
-  const result = {}
-  for (let [key, value] of Object.entries(input)) {
-    rec(key, value, result);
-  }
+  console.log(flatObject(input));
 
-  console.log(result);
-  debugger
+
+
+
+
+
+  // function rec(preKey, value, result) {
+  //   if (typeof value === 'number' || typeof value === 'string' || typeof value === 'boolean') {
+  //     result[preKey] = value;
+  //   }
+  //   if (Array.isArray(value)) {
+  //     for (let [index, arrValue] of value.entries()) {
+  //       rec(`${preKey}[${index}]`, arrValue, result);
+  //     }
+  //   }
+  //   if (Object.prototype.toString.call(value) === "[object Object]") {
+  //     for (let [key, objValue] of Object.entries(value)) {
+  //       rec(`${preKey}.${key}`, objValue, result);
+  //     }
+  //   }
+  // }
+
+  // const result = {}
+  // for (let [key, value] of Object.entries(input)) {
+  //   rec(key, value, result);
+  // }
+
+  // console.log(result);
+  // debugger
 </script>
 
 </html>

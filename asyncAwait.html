@@ -1,0 +1,68 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>手写async await(co函数)</title>
+</head>
+<body>
+  <script>
+
+    function asynceGenerator(generatoFn) {
+      return function(...args) {
+        const gen = generatoFn.apply(this, args);
+
+        return new Promise((resolve, reject) => {
+
+          let result;
+          // key可以使 gen.next() 或者 gen.throw
+          function step(key, arg) {
+            try {
+              result = gen[key](arg);
+            } catch(e) {
+              // 捕获step('throw', error)抛出的错误 结束promise
+              return reject(e);
+            }
+
+            // Generator执行后返回的结果是{done: true/false, value: 'xxx'} 形式
+
+            const { done, value } = result;
+
+            if(done) {
+              // 代表执行结束了
+              return resolve(value);
+            } else {
+              // 这个value对应的是yield后面的promise，then的执行取决于这个value的promise状态
+              return Promise.resolve(value).then((val) => {
+                // 递归解析后面的yield
+                step('next', val);
+              }, (error) => {
+                // 执行失败 抛出错误
+                step('throw', error);
+              })
+            }
+          }
+          step('next');
+        });
+      }
+    }
+
+    const getData = (time) => new Promise((resolve, reject) => setTimeout(() => resolve('data'), time));
+    function* test() {
+      console.log('data0');
+      const data1 = yield getData(1000);
+      console.log('data1', data1);
+
+      const data2 = yield getData(2000);
+
+      console.log('data2', data2);
+
+      return 'success';
+    };
+
+    const testGen = asynceGenerator(test);
+
+    testGen().then(res => console.log(res));
+  </script>
+</body>
+</html>

@@ -12,14 +12,14 @@
     // 输出 { name: 'zongwei', age: '18' }
 
     function parseURLParameter(url) {
+      if (!url.includes('?')) return {};
       const match = /[^?]*$/.exec(url)[0];
       const result = {}
       if (match) {
         const arr = match.split('&');
-        for (let [key, value] of arr.entries()) {
-          if (key && value) {
-            result[key] = decodeURIComponent(value);
-          }
+        for (let str of arr) {
+          const list = str.split('=');
+          result[list[0]] = list[1];
         }
       }
       return result;
@@ -29,7 +29,9 @@
       return Object.fromEntries(new URL(url).searchParams.entries())
     }
 
-    const res = parseURLParameter2("https://www.baidu.com?name=zongwei&age=18");
+    const res = parseURLParameter("https://www.baidu.com?name=zongwei&age=18");
+
+    console.log(res);
 
     // 实现instanceof
     // 如果A沿着原型链能找到B的prototype,那么 A instanceof B 为 true

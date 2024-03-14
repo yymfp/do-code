@@ -8,32 +8,37 @@
   <body></body>
   <script>
     // 快排, 二叉树前序遍历思路
-    const testArr = [2, 1, 3, 4, 0, 20, 4, 70, 1];
+    const testArr = [1, 2, 1, 3, 4, 0, 20, 4, 70, 1];
+    function quickSort(arr) {
+      if (arr.length <= 1) return arr;
+      
+      sort(arr, 0, arr.length - 1);
+    }
 
-    function quickSort(arr, low, high) {
-      if (low <= high) {
-        // 找到分区点（pivot）的位置
-        const pivotIndex = partition(arr, low, high);
-
-        // 递归地对分区的两侧进行排序
-        quickSort(arr, low, pivotIndex - 1);
-        quickSort(arr, pivotIndex + 1, high);
+    function sort(arr, l, r) {
+      if (l < r) {
+        const mid = partition(arr, l, r);
+        sort(arr, l, mid - 1);
+        sort(arr, mid + 1, r);
       }
     }
 
-    function partition(arr, low, high) {
-      const pivot = arr[high];
+    function partition(arr, l, r) {
+      const p = arr[r];
 
-      // 双指针，切分数组
-      let slow = low;
-      for (let fast = low; fast <= high; fast++) {
-        if (arr[fast] <= pivot) {
-          swap(arr, slow, fast);
+      // 快慢指针换位置
+      let slow = l - 1;
+
+      for (let fast = l; fast < r; fast++) {
+        // 找到<=基准值
+        if (arr[fast] <= p) {
           slow++;
+          swap(arr, fast, slow);
         }
       }
 
-      return slow - 1;
+      swap(arr, slow + 1, r);
+      return slow + 1;
     }
 
     function swap(arr, i, j) {
@@ -42,8 +47,53 @@
       arr[j] = temp;
     }
 
-    // 示例用法
-    quickSort(testArr, 0, testArr.length - 1);
+    quickSort(testArr);
+
     console.log(testArr);
+
+
+
+
+
+
+
+
+
+
+    // function quickSort(arr, low, high) {
+    //   if (low <= high) {
+    //     // 找到分区点（pivot）的位置
+    //     const pivotIndex = partition(arr, low, high);
+
+    //     // 递归地对分区的两侧进行排序
+    //     quickSort(arr, low, pivotIndex - 1);
+    //     quickSort(arr, pivotIndex + 1, high);
+    //   }
+    // }
+
+    // function partition(arr, low, high) {
+    //   const pivot = arr[high];
+
+    //   // 双指针，切分数组
+    //   let slow = low;
+    //   for (let fast = low; fast <= high; fast++) {
+    //     if (arr[fast] <= pivot) {
+    //       swap(arr, slow, fast);
+    //       slow++;
+    //     }
+    //   }
+
+    //   return slow - 1;
+    // }
+
+    // function swap(arr, i, j) {
+    //   const temp = arr[i];
+    //   arr[i] = arr[j];
+    //   arr[j] = temp;
+    // }
+
+    // 示例用法
+    // quickSort(testArr, 0, testArr.length - 1);
+    // console.log(testArr);
   </script>
 </html>

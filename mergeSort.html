@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+  <title>归并排序</title>
 </head>
 <body>
   
@@ -11,26 +11,80 @@
 <script>
   const testArr = [2, 1, 3, 4, 0, 20, 4, 70, 1];
 
+
   function mergeSort(arr) {
     return sort(arr, 0, arr.length - 1);
-  }
+  };
 
-  // 输入一个数组，[lo, hi] 升序排好序并返回
-  function sort(arr, lo, hi) {
-    if (lo === hi) {
-      return [arr[lo]];
+  function sort(arr, l, r) {
+    if (l === r) {
+      return [arr[l]];
     }
-    const middle = Math.floor((lo + hi) / 2);
-    const left = sort(arr, lo, middle);
-    const right = sort(arr, middle + 1, hi);
-    return merge(left, right);
+
+    const mid = Math.floor((l + r) / 2);
+    const lArr = sort(arr, l, mid);
+    const rArr = sort(arr, mid + 1, r);
+
+    return merge(lArr, rArr);
   }
 
-  // 合并两个有序数组 -> 返回一个升序数组
-  function merge(arr1, arr2) {
-    return [...arr1, ...arr2].sort((a, b) => a -b);
+  function merge(lArr, rArr) {
+    let data = [];
+    let i = 0;
+    let j = 0;
+
+    while (i < lArr.length && j < rArr.length) {
+      if (lArr[i] <= rArr[j]) {
+        data.push(lArr[i]);
+        i++;
+      } else {
+        data.push(rArr[j]);
+        j++
+      }
+    }
+
+    return data.concat(lArr.slice(i), rArr.slice(j));
   }
 
-  mergeSort(testArr);
+  const arr = mergeSort(testArr);
+  console.log(arr);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  // function mergeSort(arr) {
+  //   return sort(arr, 0, arr.length - 1);
+  // }
+
+  // // 输入一个数组，[lo, hi] 升序排好序并返回
+  // function sort(arr, lo, hi) {
+  //   if (lo === hi) {
+  //     return [arr[lo]];
+  //   }
+  //   const middle = Math.floor((lo + hi) / 2);
+  //   const left = sort(arr, lo, middle);
+  //   const right = sort(arr, middle + 1, hi);
+  //   return merge(left, right);
+  // }
+
+  // // 合并两个有序数组 -> 返回一个升序数组
+  // function merge(arr1, arr2) {
+  //   return [...arr1, ...arr2].sort((a, b) => a -b);
+  // }
+
+  // const list = mergeSort(testArr);
+
+  // console.log(list);
 </script>
 </html>

@@ -361,9 +361,11 @@
     //     for (let i = 1; i < nums.length; i++) {
     //       let current = nums[i];
     //       let j;
+    // 找到前面的元素 如果前面的元素比当前元素大 则将前面的元素后移 继续往前找
     //       for (j = i - 1; j >= 0 && nums[j] > current; j--) {
     //         nums[j + 1] = nums[j];
     //       }
+    // j比current小 且j+1已经往后移了 将current放入j+1
     //       nums[j + 1] = current;
     //     }
     //     return nums;
@@ -397,10 +399,10 @@
     //   return result.concat(left.slice(i).concat(right.slice(j)));
     // }
     // 快速排
-    var sortArray = function(nums) {
-      if (nums.length <= 1) return nums;
-      sort(nums, 0, nums.length - 1);
-    }
+    // var sortArray = function(nums) {
+    //   if (nums.length <= 1) return nums;
+    //   sort(nums, 0, nums.length - 1);
+    // }
 
     // var sort = function(nums, l, r) {
     //   if (l < r) {

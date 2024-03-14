@@ -22,24 +22,41 @@
     // 问题1：使用 for of 对 one 进行遍历，会有什么问题？
     // 问题2：想办法进行改造，让 one 支持 for of 遍历
 
-    Obj.prototype[Symbol.iterator] = function () {
-      let p = this;
+
+    Obj.prototype[Symbol.iterator] = function() {
+      let self = this;
       return {
-        next: () => {
-          if (p) {
-            const value = p.value;
-            p = p.next;
-            return {
-              done: false,
-              value,
-            };
+        next() {
+          if (self) {
+            const value = self.value;
+            self = self.next;
+            return {done: false, value};
+          } else {
+            return {done: true};
           }
-          return {
-            done: true,
-          };
-        },
-      };
-    };
+        }
+      }
+    }
+
+
+    // Obj.prototype[Symbol.iterator] = function () {
+    //   let p = this;
+    //   return {
+    //     next: () => {
+    //       if (p) {
+    //         const value = p.value;
+    //         p = p.next;
+    //         return {
+    //           done: false,
+    //           value,
+    //         };
+    //       }
+    //       return {
+    //         done: true,
+    //       };
+    //     },
+    //   };
+    // };
 
     for (let value of one) {
       console.log(value);
