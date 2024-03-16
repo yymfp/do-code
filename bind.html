@@ -20,7 +20,7 @@
 
       const args = [...arguments].splice(1);
 
-      // 创建空函数对象
+      // 创建空函数对象 不直接使用bound绑定原型是为了防止 外层修改了原型导致所有通过new bound的对象都会有影响 所以加了一层
       function Fn() {};
 
       function bound(...args1) {
