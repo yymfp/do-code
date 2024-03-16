@@ -51,36 +51,71 @@
     // let target = deepClone(source);
 
 
-    const map = new WeakMap();
+    // const map = new WeakMap();
 
-    const _forEach = (arr, cb) => {
-      let i = 0;
-      while (i < arr.length) {
-        cb(arr[i], i);
-        i++;
-      };
-    };
+    // const _forEach = (arr, cb) => {
+    //   let i = 0;
+    //   while (i < arr.length) {
+    //     cb(arr[i], i);
+    //     i++;
+    //   };
+    // };
 
-    const deepClone = (data) => {
+    // const deepClone = (data) => {
+    //   if (typeof data === "object" && data !== null) {
+    //     const obj = new data.constructor(); // {} or []
+    //     if (map.has(data)) {
+    //       return map.get(data);
+    //     }
+    //     map.set(data, obj);
+    //     const isArray = Array.isArray(data);
+    //     const keys = isArray ? undefined : Object.keys(data);
+    //     _forEach(keys || data, (val, key) => {
+    //       if (keys) {
+    //         key = val;
+    //       }
+    //       obj[key] = deepClone(data[key]);
+    //     })
+    //     return obj;
+    //   } else {
+    //     return data;
+    //   }
+    // }
+
+
+
+
+
+
+
+    const weakmap = new WeakMap();
+    const deepClone = function(data) {
       if (typeof data === "object" && data !== null) {
-        const obj = new data.constructor(); // {} or []
-        if (map.has(data)) {
-          return map.get(data);
+        const result = new data.constructor();
+        if (weakmap.has(data)) {
+          return weakmap.get(data);
         }
-        map.set(data, obj);
-        const isArray = Array.isArray(data);
-        const keys = isArray ? undefined : Object.keys(data);
-        _forEach(keys || data, (val, key) => {
-          if (keys) {
-            key = val;
+
+        weakmap.set(data, result);
+
+        if (Array.isArray(data)) {
+          for (let [i, item] of data.entries()) {
+            result[i] = deepClone(item);
           }
-          obj[key] = deepClone(data[key]);
-        })
-        return obj;
+        } else if (Object.prototype.toString.call(data) === '[object Object]') {
+          for (let [key, v] of Object.entries(data)) {
+            result[key] = deepClone(v);
+          }
+        }
+
+        return result;
+
       } else {
         return data;
       }
     }
+
+
     source.source = source;
     let target = deepClone(source);
     source.a = '222';
