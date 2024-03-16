@@ -1,0 +1,40 @@
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>防抖函数</title>
+</head>
+
+<body>
+  <div style="height: 1000vh"></div>
+  <script>
+    // 多次执行 每次都会重置时间。某个函数在某段时间内，无论触发了多少次回调，都只执行最后一次
+    function debounce(fn, wait = 50, immediate) {
+      let timer;
+      return function (...args) {
+        const context = this;
+        if (timer) {
+          clearTimeout(timer);
+        }
+
+        // 立即执行
+        if (immediate && !timer) {
+          fn.apply(context, args);
+        }
+
+        timer = setTimeout(() => {
+          fn.apply(context, args);
+          timer = null;
+        }, wait)
+      }
+    }
+
+    const betterFn = debounce(() => console.log('fn 防抖执行了'), 1000)
+    // 停止滑动 1 秒后执行函数 () => console.log('fn 防抖执行了')
+    document.addEventListener('scroll', betterFn)
+  </script>
+</body>
+
+</html>

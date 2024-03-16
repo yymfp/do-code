@@ -1,0 +1,42 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>节流函数</title>
+</head>
+<body>
+  <script>
+    // 限制wait s内只执行一次
+
+    // 实现方式1
+    function throttle1(fn, wait) {
+      let timer;
+      return function(...args) {
+        if (timer) return;
+        timer = setTimeout(() => {
+          fn.apply(this. args);
+          timer = null;
+        }, wait);
+      }
+    }
+
+    // 实现方式2
+    function throttle2(fn, wait) {
+      let preTime = 0;
+      return function(...args) {
+        let now = Date.now();
+
+        if (now - preTime > wait) {
+          preTime = now;
+          fn.apply(this. args);
+        }
+      }
+    }
+
+    // const betterFn = throttle2(() => console.log('fn 函数执行了'), 1000);
+
+    // setInterval(betterFn, 10);
+  </script>
+</body>
+</html>
