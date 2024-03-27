@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<script crossorigin src="https://cdn.bootcdn.net/ajax/libs/react/17.0.2/umd/react.development.js"></script>
+<script crossorigin src="https://cdn.bootcdn.net/ajax/libs/react-dom/17.0.2/umd/react-dom.development.js"></script>
+<body>
+  <!-- html 的 attribute只接收string类型的，传入引用类型无法解析 -->
+  <my-element id="myElement" name="掘金"></my-element>
+  <button onclick="changeAttribute()">改变 Attribute,传递基本类型数据</button>
+  <button onclick="changeProperty()">property, 传递引用类型数据</button>
+</body>
+<script>
+  function changeAttribute() { myElement.setAttribute('name', 'Attribute 被改变了!') }
+  function changeProperty() { myElement.name = () => 'property 被改变了' }
+  function Hello(props) {
+    if (typeof props.name === 'function') {
+      return `hello, ${props.name()}`;
+    }
+    return `hello, ${props.name}`;
+  }
+  class WebComponentFactory {
+    constructor({ componentProperties }) {
+      this.componentProperties = componentProperties; // 需要代理的属性
+      this.componentAttributes = {}; // 需要监听的属性
+      this.reflectPropertiesToAttributes();
+    }
+    reflectPropertiesToAttributes() {
+      Object.entries(this.componentProperties || {}).forEach(([key, value]) => {
+        // 非基础类型，直接返回, attributes 只能监听基本类型
+        if (typeof value !== 'number' && typeof value !== 'string' && typeof value !== 'boolean') return;
+        this.componentAttributes[key.toLowerCase()] = {
+          property: key,
+          value,
+        };
+      });
+    }
+    create() {
+      const factory = this;
+      return class WebComponent extends HTMLElement {
+        initialProperties = factory.componentProperties;
+        properties = {}; // 内部对象，存储最新的 props
+        hasConnected = false; // 是否已挂载
+        constructor() {
+          super();
+          this.subscribeToProperties();
+          this._shadowRoot = this.attachShadow({ mode: "open" });
+        }
+        // 代理属性（attribute + property, 确保 property 改变时，propertyChangedCallback 被触发
+        subscribeToProperties() {
+          const propertyMap = {};
+          Object.keys(this.initialProperties).forEach((key) => {
+            propertyMap[key] = {
+              configurable: true,
+              enumerable: true,
+              get: () => {
+                const currentValue = this.properties.hasOwnProperty(key) ? this.properties[key]: this.initialProperties[key];
+                return currentValue;
+              },
+              set: (newValue) => {
+                const oldValue = this.properties.hasOwnProperty(key) ? this.properties[key] : this.initialProperties[key];
+                this.propertyChangedCallback(key, oldValue, newValue);
+              },
+            };
+          });
+          Object.defineProperties(this, propertyMap);
+        }
+        // 更新内部对象的值, 调用 mountReactApp
+        propertyChangedCallback(name, oldValue, newValue) {
+          if (!this.hasConnected) return;
+          if (oldValue === newValue) return;
+          this.properties[name] = newValue;
+          this.mountReactApp();
+        }
+        syncronizePropertiesAndAttributes() {
+          Object.keys(this.initialProperties).forEach((key) => {
+            if (this.properties.hasOwnProperty(key)) return;
+            if (this.getAttribute(key) !== null) { // 不为空直接取 Attribute 的值
+              this.properties[key] = this.getAttribute(key);
+              return;
+            }
+            this.properties[key] = this.initialProperties[key]; // 为空取默认值
+          });
+        }
+        reactProps() {
+          this.syncronizePropertiesAndAttributes();
+          return this.properties;
+        }
+        mountReactApp() { // 重新渲染
+          const element = React.createElement(Hello, this.reactProps(), null);
+          ReactDOM.render(element, this._shadowRoot);
+        }
+        connectedCallback() { // 元素被添加到文档时调用
+          debugger;
+          this.mountReactApp();
+          this.hasConnected = true;
+        }
+        static get observedAttributes() {
+          return Object.keys(factory.componentAttributes); // 属性数组，数组中的属性变化会被监视
+        }
+        attributeChangedCallback(name, oldValue, newValue) { // 当上面数组中的属性发生变化时调用
+          if (!this.hasConnected) return;
+          if (!factory.componentAttributes.hasOwnProperty(name)) return;
+          const propertyName = factory.componentAttributes[name].property;
+          this.properties[propertyName] = newValue; // 同步 attribute newValue 到内部对象
+          this.mountReactApp();
+        }
+      }
+    }
+  }
+  customElements.define("my-element", new WebComponentFactory({ componentProperties: { name: ''}}).create());
+</script>
+</html>
